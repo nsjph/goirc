@@ -113,11 +113,11 @@ func NewConfig(nick string, args ...string) *Config {
 // Creates a new IRC connection object, but doesn't connect to anything so
 // that you can add event handlers to it. See AddHandler() for details
 func SimpleClient(nick string, args ...string) *Conn {
-	conn := Client(NewConfig(nick, args...))
+	conn := Client(NewConfig(nick, args...), false)
 	return conn
 }
 
-func Client(cfg *Config) *Conn {
+func Client(cfg *Config, ipv6 bool) *Conn {
 	if cfg == nil {
 		cfg = NewConfig("__idiot__")
 	}
@@ -134,7 +134,12 @@ func Client(cfg *Config) *Conn {
 			cfg.LocalAddr += ":0"
 		}
 
-		local, err := net.ResolveTCPAddr("tcp", cfg.LocalAddr)
+		var transport string = "tcp"
+		if ipv6 == true {
+			transport = "tcp6"
+		}
+
+		local, err := net.ResolveTCPAddr(transport, cfg.LocalAddr)
 		if err == nil {
 			dialer.LocalAddr = local
 		} else {
