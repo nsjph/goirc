@@ -86,6 +86,8 @@ type Config struct {
 
 	// Timeout, The amount of time in seconds until a timeout is triggered.
 	Timeout time.Duration
+
+	UseIPv6 bool
 }
 
 func NewConfig(nick string, args ...string) *Config {
@@ -113,11 +115,11 @@ func NewConfig(nick string, args ...string) *Config {
 // Creates a new IRC connection object, but doesn't connect to anything so
 // that you can add event handlers to it. See AddHandler() for details
 func SimpleClient(nick string, args ...string) *Conn {
-	conn := Client(NewConfig(nick, args...), false)
+	conn := Client(NewConfig(nick, args...))
 	return conn
 }
 
-func Client(cfg *Config, ipv6 bool) *Conn {
+func Client(cfg *Config) *Conn {
 	if cfg == nil {
 		cfg = NewConfig("__idiot__")
 	}
@@ -135,7 +137,7 @@ func Client(cfg *Config, ipv6 bool) *Conn {
 		}
 
 		var transport string = "tcp"
-		if ipv6 == true {
+		if cfg.UseIPv6 == true {
 			transport = "tcp6"
 		}
 
